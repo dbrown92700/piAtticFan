@@ -1,4 +1,4 @@
-#!/usr/bin python3
+#!/usr/bin/python3
 
 from flask import Flask, request, make_response, render_template, redirect
 from threading import Thread

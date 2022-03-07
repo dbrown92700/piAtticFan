@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 
 from flask import Flask, request, make_response, render_template, redirect
 from threading import Thread
@@ -60,6 +61,6 @@ if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
-    ipaddress = socket.gethostbyname(socket.gethostname())
+    ipaddress = os.getenv('PI_IP_ADD', '127.0.0.1')
     app.run(host=ipaddress, port=8080, debug=True)
 # [END gae_python38_app]

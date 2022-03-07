@@ -1,6 +1,6 @@
 #!/usr/bin python3
 
-from flask import Flask, request, make_response, render_template, redirect, url_for, session, Markup
+from flask import Flask, request, make_response, render_template, redirect
 from threading import Thread
 from time import sleep
 

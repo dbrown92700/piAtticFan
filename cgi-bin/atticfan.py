@@ -4,7 +4,6 @@ import os
 from flask import Flask, request, make_response, render_template, redirect
 from threading import Thread
 from time import sleep
-import socket
 
 ###########################################################################
 # Set up global variables for time remaining and a countdown thread object
@@ -55,7 +54,7 @@ def read():
         status = 'Is Not Running'
         time = 'N/A'
 
-    return make_response(render_template('templates/fan.html', time=time, status=status))
+    return make_response(render_template('fan.html', time=time, status=status))
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

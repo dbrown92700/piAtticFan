@@ -22,6 +22,11 @@ timer = Thread(target=countdown)
 app = Flask(__name__)
 app.secret_key = 'any random string'
 
+@app.route('/')
+def home():
+    return app.root_path
+
+
 ###########################################################################
 # start page sets the time remaining value and starts the timer thread
 # if it's not running already

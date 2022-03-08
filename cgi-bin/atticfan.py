@@ -55,7 +55,7 @@ def read():
         status = 'Is Not Running'
         time = 'N/A'
 
-    return make_response(render_template('fan.html', time=time, status=status))
+    return make_response(render_template('templates/fan.html', time=time, status=status))
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App

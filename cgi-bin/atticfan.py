@@ -4,18 +4,26 @@ import os
 from flask import Flask, request, make_response, render_template, redirect
 from threading import Thread
 from time import sleep
+import pigpio
 
 ###########################################################################
 # Set up global variables for time remaining and a countdown thread object
 ###########################################################################
 time_remaining = 60
+pi = pigpio.pi()
+highpin = 17
+pi.set_mode(highpin, pigpio.OUTPUT)
+pi.set_pull_up_down(highpin, pigpio.PUD_DOWN)
 
 def countdown():
     global time_remaining
+    global pi
+
     while time_remaining > 0:
         sleep(1)
         time_remaining -= 1
     print('Done')
+    pi.write(highpin, 0)
 
 timer = Thread(target=countdown)
 
@@ -36,10 +44,13 @@ def set():
 
     global time_remaining
     global timer
+    global pi
+
     time_remaining = int(request.args.get('time'))
     if not timer.is_alive():
         timer = Thread(target=countdown)
         timer.start()
+    pi.write(highpin, 1)
 
     return make_response(redirect('/read/'))
 

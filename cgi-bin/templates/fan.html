@@ -10,7 +10,7 @@
     <link REL="SHORTCUT ICON" href="/favicon.ico">
 </head>
 <body>
-    <table>
+    <table style="border: 1px solid black; margin-left: auto; margin-right: auto; padding: 10px">
         <tr><td>Status:</td><td><div id="status">{{ status }}</div></td></tr>
         <tr><td>Time Remaining:</td><td><div id="clock">{{ time }}</div></td></tr>
     </table>
@@ -24,9 +24,50 @@
        }, 1000);
     });
     </script>
+    <br>
+        <table style="border: 1px solid black; margin-left: auto; margin-right: auto; padding: 10px">
+            <form action="/start/">
 
-    <a href="/start/?time=15">15 Second Timer</a><br>
-    <a href="/start/?time=30">30 Second Timer</a><br>
-    <a href="/stop/">Stop Fan</a><br>
+            <tr>
+                <td>Run Time:</td>
+                <td>
+                    <select name="time" id="time" style="width: 100px">
+                        <option value="1800">0:30</option>
+                        <option value="3600" selected="selected">1:00</option>
+                        <option value="5400">1:30</option>
+                        <option value="7200">2:00</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Delay:
+                </td>
+                <td>
+                    <select name="delay" id="delay" style="width: 100px">
+                        <option value="0">None</option>
+                        <option value="3600">1 Hour</option>
+                        <option value="7200">2 Hours</option>
+                        <option value="10800">3 Hours</option>
+                        <option value="14400">4 Hours</option>
+                        <option value="18000">5 Hours</option>
+                        <option value="21600">6 Hours</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <input type="submit">
+                </td>
+            </tr>
+    </form>
+    </table>
+    <br>
+    <table style="margin-left: auto; margin-right: auto;">
+        <tr>
+            <td style="padding: 15px; border: 10px solid white; background-color: #FFAAAA; text-align: center;">
+                <a href="/stop/">Cancel Schedule<br>& Stop Fan</a></td>
+        </tr>
+    </table>
 </body>
 </html>

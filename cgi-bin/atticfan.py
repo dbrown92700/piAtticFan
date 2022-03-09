@@ -32,6 +32,7 @@ def countdown():
         sleep(1)
         delay_remaining -= 1
     while time_remaining > 0:
+        pi.write(highpin, 1)
         sleep(1)
         time_remaining -= 1
     print('Done')
@@ -90,8 +91,6 @@ def start():
     if not timer.is_alive():
         timer = Thread(target=countdown)
         timer.start()
-
-    pi.write(highpin, 1)
 
     return make_response(redirect('/'))
 

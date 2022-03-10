@@ -46,8 +46,8 @@ def countdown():
     print('Done')
     time_remaining = 0
     status = '<b>Not Running</b>'
-    for pin in pins:
-        pi.write(pin, 0)
+    for pn in pins:
+        pi.write(pn, 0)
 
 
 timer = Thread(target=countdown)
@@ -123,8 +123,8 @@ def stop():
     time_remaining = 0
     delay_remaining = 0
     sleep(2)
-    for pin in pins:
-        pi.write(pin, 0)
+    for pn in pins:
+        pi.write(pn, 0)
 
     return make_response(redirect('/'))
 
@@ -143,7 +143,7 @@ def fan_clock():
 
 
 @app.route('/status/')
-def fanstat():
+def fan_status():
 
     global status
 

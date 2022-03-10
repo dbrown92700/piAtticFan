@@ -102,7 +102,7 @@ def start():
     time_value = int(request.args.get('time'))
     delay_value = int(request.args.get('delay'))*3600
     speed = int(request.args.get('speed'))
-    if timer.is_alive() & (delay_remaining > 0):
+    if timer.is_alive() & (delay_value > 0):
         time_remaining = 0
         delay_remaining = 0
         sleep(3)

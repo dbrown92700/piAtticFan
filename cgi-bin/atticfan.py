@@ -39,8 +39,9 @@ def countdown():
         sleep(1)
         delay_remaining -= 1
     while time_remaining > 0:
-        pi.write(pins[speed], 1)
+        pi.write(abs(pins[speed]-1), 0)
         sleep(1)
+        pi.write(pins[speed], 1)
         time_remaining -= 1
     print('Done')
     time_remaining = 0

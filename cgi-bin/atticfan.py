@@ -17,9 +17,15 @@ status = 'Is Not Running'
 # Initialize GPIO for Attic Fan
 pi = pigpio.pi()
 highpin = 17
-pi.set_mode(highpin, pigpio.OUTPUT)
-pi.set_pull_up_down(highpin, pigpio.PUD_DOWN)
-pi.write(highpin, 0)
+lowpin = 22
+pins = [highpin, lowpin]
+speeds = ['High', 'Low']
+speed = 0
+
+for pin in pins:
+    pi.set_mode(pin, pigpio.OUTPUT)
+    pi.set_pull_up_down(pin, pigpio.PUD_DOWN)
+    pi.write(pin, 0)
 
 
 def countdown():
@@ -27,18 +33,20 @@ def countdown():
     global pi
     global status
     global delay_remaining
+    global speed
 
     while delay_remaining > 0:
         sleep(1)
         delay_remaining -= 1
     while time_remaining > 0:
-        pi.write(highpin, 1)
+        pi.write(speed, 1)
         sleep(1)
         time_remaining -= 1
     print('Done')
     time_remaining = 0
-    status = 'Is Not Running'
-    pi.write(highpin, 0)
+    status = '<b>Not Running</b>'
+    for pin in pins:
+        pi.write(pin, 0)
 
 
 timer = Thread(target=countdown)
@@ -57,16 +65,18 @@ def controller():
     global timer
     global status
     global pi
+    global speed
 
     if timer.is_alive():
         if delay_remaining > 0:
             st = datetime.now() + timedelta(seconds=delay_remaining)
-            status = f'Scheduled to start at: {st.hour}:{st.minute}'
+            status = f'''Scheduled start time: <b>{st.hour}:{st.minute:02}</b><br>
+                    Fan speed: <b>{speeds[speed]}</b>'''
         else:
-            status = 'Is Running'
+            status = f'<b>Running<br>{speeds[speed]} Speed</b>'
         time = f'{int(time_remaining/3600):2}:{int((time_remaining%3600)/60):02}:{time_remaining%60:02}'
     else:
-        status = 'Is Not Running'
+        status = '<b>Not Running</b>'
         time = '0:00:00'
 
     return make_response(render_template('fan.html', time=time, status=status))
@@ -85,9 +95,11 @@ def start():
     global timer
     global pi
     global delay_remaining
+    global speed
 
     time_remaining = int(request.args.get('time'))
     delay_remaining = int(request.args.get('delay'))
+    speed = int(request.args.get('speed'))
     if not timer.is_alive():
         timer = Thread(target=countdown)
         timer.start()
@@ -109,7 +121,8 @@ def stop():
 
     time_remaining = 0
     delay_remaining = 0
-    pi.write(highpin, 0)
+    for pin in pins:
+        pi.write(pin, 0)
 
     return make_response(redirect('/'))
 

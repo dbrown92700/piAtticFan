@@ -4,15 +4,18 @@
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <meta charset="UTF-8">
     <title>Attic Fan</title>
-    <meta name='viewport' content='width=400'>
+    <meta name='viewport' content='width=330'>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" sizes="192X192" href="/android.png">
     <link REL="SHORTCUT ICON" href="/favicon.ico">
 </head>
-<body>
+<H1 style="text-align: center">Attic Fan Control</H1>
+<body style="font-family: Arial">
     <table style="border: 1px solid black; margin-left: auto; margin-right: auto; padding: 10px">
-        <tr><td>Status:</td><td><div id="status">{{ status }}</div></td></tr>
-        <tr><td>Time Remaining:</td><td><div id="clock">{{ time }}</div></td></tr>
+        <tr><td style="width: 80px">Status:</td>
+            <td style="width: 220px"><div id="status">{{ status }}</div></td>
+        </tr>
+        <tr><td>Time Remaining:</td><td><b><div id="clock">{{ time }}</div></b></td></tr>
     </table>
 
     <script>
@@ -29,9 +32,9 @@
             <form action="/start/">
 
             <tr>
-                <td>Run Time:</td>
-                <td>
-                    <select name="time" id="time" style="width: 100px">
+                <td style="text-align: right; width: 150px">Run Time:</td>
+                <td style="width: 150px">
+                    <select name="time" id="time" style="width: 100px;">
                         <option value="1800">0:30</option>
                         <option value="3600" selected="selected">1:00</option>
                         <option value="5400">1:30</option>
@@ -40,7 +43,7 @@
                 </td>
             </tr>
             <tr>
-                <td>
+                <td style="text-align: right;">
                     Delay:
                 </td>
                 <td>
@@ -56,8 +59,20 @@
                 </td>
             </tr>
             <tr>
-                <td style="text-align: center;">
-                    <input type="submit">
+                <td style="text-align: right;">
+                    Speed:
+                </td>
+                <td>
+                    <select name="speed" id="speed" style="width: 100px">
+                        <option value="0">High</option>
+                        <option value="1">Low</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;" colspan="2">
+                    <input type="submit" value="Set Program">
+
                 </td>
             </tr>
     </form>
@@ -65,8 +80,7 @@
     <br>
     <table style="margin-left: auto; margin-right: auto;">
         <tr>
-            <td style="padding: 15px; border: 10px solid white; background-color: #FFAAAA; text-align: center;">
-                <a href="/stop/">Cancel Schedule<br>& Stop Fan</a></td>
+            <td><a href="/stop/"><img src="/img/stop.png"></a></td>
         </tr>
     </table>
 </body>

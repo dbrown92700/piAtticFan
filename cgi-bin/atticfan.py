@@ -103,6 +103,7 @@ def start():
     delay_remaining = int(request.args.get('delay'))*3600
     speed = int(request.args.get('speed'))
     if timer.is_alive() & (delay_remaining > 0):
+        sleep(2)
         for pn in pins:
             pi.write(pn, 0)
     if not timer.is_alive():

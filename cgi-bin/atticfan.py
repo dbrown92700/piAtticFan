@@ -99,13 +99,15 @@ def start():
     global delay_remaining
     global speed
 
-    time_remaining = int(request.args.get('time'))
-    delay_remaining = int(request.args.get('delay'))*3600
+    time_value = int(request.args.get('time'))
+    delay_value = int(request.args.get('delay'))*3600
     speed = int(request.args.get('speed'))
     if timer.is_alive() & (delay_remaining > 0):
-        sleep(2)
-        for pn in pins:
-            pi.write(pn, 0)
+        time_remaining = 0
+        delay_remaining = 0
+        sleep(3)
+        time_remaining = time_value
+        delay_remaining = delay_value
     if not timer.is_alive():
         timer = Thread(target=countdown)
         timer.start()

@@ -28,6 +28,10 @@ for pin in pins:
     pi.write(pin, 0)
 
 
+###########################################################################
+# Timer function for managing fan run timer and delay timer.  Will be started
+# as a thread when web user sets a schedule.
+###########################################################################
 def countdown():
     global time_remaining
     global pi
@@ -54,12 +58,11 @@ timer = Thread(target=countdown)
 app = Flask(__name__)
 app.secret_key = 'any random string'
 
-###########################################################################
-# read page reads the time remaining or indicates if the timer thread is
-# not running
-###########################################################################
 
-
+###########################################################################
+# Main web page determines the fan status and returns a web page using the
+# fan.html Flask template
+###########################################################################
 @app.route('/')
 def controller():
 
@@ -84,11 +87,9 @@ def controller():
 
 
 ###########################################################################
-# start page sets the time remaining value and starts the timer thread
-# if it's not running already
+# Start page sets the delay time, run time and fan speed.  Starts the timer thread
+# if it's not running already.  Redirects to main page.
 ###########################################################################
-
-
 @app.route('/start/')
 def start():
 
@@ -101,18 +102,20 @@ def start():
     time_remaining = int(request.args.get('time'))
     delay_remaining = int(request.args.get('delay'))*3600
     speed = int(request.args.get('speed'))
+    if timer.is_alive() & (delay_remaining > 0):
+        for pn in pins:
+            pi.write(pn, 0)
     if not timer.is_alive():
         timer = Thread(target=countdown)
         timer.start()
 
     return make_response(redirect('/'))
 
-###########################################################################
-# start page sets the time remaining value and starts the timer thread
-# if it's not running already
-###########################################################################
 
-
+###########################################################################
+# Stop page clears all timers which will stop the countdown thread and
+# also clears all GPIO pins.  Redirects to main page.
+###########################################################################
 @app.route('/stop/')
 def stop():
 
@@ -128,11 +131,10 @@ def stop():
 
     return make_response(redirect('/'))
 
-###########################################################################
-# Web call that returns the amount of time on the clock
-###########################################################################
 
-
+###########################################################################
+# Web call that returns the amount of time on the clock.  Used by fan.html javascript
+###########################################################################
 @app.route('/clock/')
 def fan_clock():
 
@@ -142,6 +144,9 @@ def fan_clock():
     return clock
 
 
+###########################################################################
+# Web call that returns the status of the fan.  Used by fan.html javascript
+###########################################################################
 @app.route('/status/')
 def fan_status():
 

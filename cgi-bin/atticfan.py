@@ -98,7 +98,7 @@ def start():
     global speed
 
     time_remaining = int(request.args.get('time'))
-    delay_remaining = int(request.args.get('delay'))
+    delay_remaining = int(request.args.get('delay'))*3600
     speed = int(request.args.get('speed'))
     if not timer.is_alive():
         timer = Thread(target=countdown)

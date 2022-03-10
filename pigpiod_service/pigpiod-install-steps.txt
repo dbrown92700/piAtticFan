@@ -1,3 +1,5 @@
+From: https://github.com/guymcswain/pigpio-client/wiki/Install-and-configure-pigpiod
+
 sudo apt-get install pigpio
 sudo cp pigpiod.service /etc/systemd/system
 sudo systemctl enable pigpiod.service

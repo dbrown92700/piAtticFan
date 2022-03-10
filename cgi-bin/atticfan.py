@@ -106,8 +106,8 @@ def start():
         time_remaining = 0
         delay_remaining = 0
         sleep(3)
-        time_remaining = time_value
-        delay_remaining = delay_value
+    time_remaining = time_value
+    delay_remaining = delay_value
     if not timer.is_alive():
         timer = Thread(target=countdown)
         timer.start()

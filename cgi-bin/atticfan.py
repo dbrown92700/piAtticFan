@@ -8,13 +8,17 @@ import pigpio
 from datetime import datetime, timedelta
 
 ###########################################################################
-# Set up global variables for time remaining and a countdown thread object
+# Set up global variables for start and stop times.  These are manipulated
+# by the web calls and used by the fan control thread.
 ###########################################################################
-time_remaining = 0
-delay_remaining = 0
-status = 'Is Not Running'
+start_time = datetime.now()
+end_time = start_time - timedelta(seconds=1)
+status = 'Initializing'
 
-# Initialize GPIO for Attic Fan
+###########################################################################
+# Initialize GPIO for Attic Fan.  Set High Speed and Low Speed pins to off.
+###########################################################################
+
 pi = pigpio.pi()
 highpin = 17
 lowpin = 22
@@ -29,32 +33,43 @@ for pin in pins:
 
 
 ###########################################################################
-# Timer function for managing fan run timer and delay timer.  Will be started
-# as a thread when web user sets a schedule.
+# Control function for managing fan power and start and stop times.
+# Started as a thread on load.
 ###########################################################################
-def countdown():
-    global time_remaining
+def fan_controller():
+    global start_time
+    global end_time
     global pi
     global status
-    global delay_remaining
     global speed
 
-    while delay_remaining > 0:
+    while True:
+        now = datetime.now()
+        if now < start_time:
+            starting = f'{start_time.hour}:{start_time.minute:02}:{start_time.second:02}'
+            seconds_remaining = (end_time - start_time).seconds
+            time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
+                             f'{seconds_remaining % 60:02}'
+            status = f'<b>Delayed Start</b> at {starting}<br>Will run for {time_remaining}<br>' \
+                     f'at {speeds[speed]} Speed'
+
+        elif (now > start_time) and (now < end_time):
+            pi.write(pins[abs(speed-1)], 0)
+            pi.write(pins[speed], 1)
+            seconds_remaining = (end_time - now).seconds
+            time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
+                             f'{seconds_remaining % 60:02}'
+            status = f'<b>Running</b> {speeds[speed]} Speed<br>Time Remaining: {time_remaining}'
+        else:
+            for pn in pins:
+                pi.write(pn, 0)
+            status = "<b>OFF</b>"
         sleep(1)
-        delay_remaining -= 1
-    while time_remaining > 0:
-        pi.write(pins[abs(speed-1)], 0)
-        sleep(1)
-        pi.write(pins[speed], 1)
-        time_remaining -= 1
-    print('Done')
-    time_remaining = 0
-    status = '<b>Not Running</b>'
-    for pn in pins:
-        pi.write(pn, 0)
 
 
-timer = Thread(target=countdown)
+fan_control = Thread(target=fan_controller)
+fan_control.start()
+
 app = Flask(__name__)
 app.secret_key = 'any random string'
 
@@ -64,26 +79,11 @@ app.secret_key = 'any random string'
 # fan.html Flask template
 ###########################################################################
 @app.route('/')
-def controller():
+def main_page():
 
-    global timer
     global status
-    global pi
-    global speed
 
-    if timer.is_alive():
-        if delay_remaining > 0:
-            st = datetime.now() + timedelta(seconds=delay_remaining)
-            status = f'''Scheduled start time: <b>{st.hour}:{st.minute:02}</b><br>
-                    Fan speed: <b>{speeds[speed]}</b>'''
-        else:
-            status = f'<b>Running<br>{speeds[speed]} Speed</b>'
-        time = f'{int(time_remaining/3600):2}:{int((time_remaining%3600)/60):02}:{time_remaining%60:02}'
-    else:
-        status = '<b>Not Running</b>'
-        time = '0:00:00'
-
-    return make_response(render_template('fan.html', time=time, status=status))
+    return make_response(render_template('fan.html', status=status))
 
 
 ###########################################################################
@@ -91,26 +91,18 @@ def controller():
 # if it's not running already.  Redirects to main page.
 ###########################################################################
 @app.route('/start/')
-def start():
+def start_fan():
 
-    global time_remaining
-    global timer
-    global pi
-    global delay_remaining
+    global start_time
+    global end_time
     global speed
 
     time_value = int(request.args.get('time'))
-    delay_value = int(request.args.get('delay'))*3600
+    delay_value = float(request.args.get('delay'))
     speed = int(request.args.get('speed'))
-    if timer.is_alive() & (delay_value > 0):
-        time_remaining = 0
-        delay_remaining = 0
-        sleep(3)
-    time_remaining = time_value
-    delay_remaining = delay_value
-    if not timer.is_alive():
-        timer = Thread(target=countdown)
-        timer.start()
+
+    start_time = datetime.now() + timedelta(minutes=delay_value)
+    end_time = start_time + timedelta(seconds=time_value)
 
     return make_response(redirect('/'))
 
@@ -120,31 +112,14 @@ def start():
 # also clears all GPIO pins.  Redirects to main page.
 ###########################################################################
 @app.route('/stop/')
-def stop():
+def stop_fan():
 
-    global time_remaining
-    global delay_remaining
-    global pi
+    global start_time
+    global end_time
 
-    time_remaining = 0
-    delay_remaining = 0
-    sleep(2)
-    for pn in pins:
-        pi.write(pn, 0)
+    start_time = end_time = datetime.now() - timedelta(seconds=1)
 
     return make_response(redirect('/'))
-
-
-###########################################################################
-# Web call that returns the amount of time on the clock.  Used by fan.html javascript
-###########################################################################
-@app.route('/clock/')
-def fan_clock():
-
-    global time_remaining
-
-    clock = f'{int(time_remaining/3600):2}:{int((time_remaining%3600)/60):02}:{time_remaining%60:02}'
-    return clock
 
 
 ###########################################################################

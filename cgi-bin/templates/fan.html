@@ -15,10 +15,9 @@
 <H1 style="text-align: center">Attic Fan Control</H1>
 <body style="font-family: Arial">
     <table style="border: 1px solid black; margin-left: auto; margin-right: auto; padding: 10px">
-        <tr><td style="width: 80px">Status:</td>
-            <td style="width: 220px"><div id="status">{{ status }}</div></td>
-        </tr>
-        <tr><td>Time Remaining:</td><td><b><div id="clock">{{ time }}</div></b></td></tr>
+        <tr><td style="width: 304px;text-align: center">
+            <div id="status">{{ status }}</div>
+        </td></tr>
     </table>
 
     <script>
@@ -26,7 +25,6 @@
         $.ajaxSetup({ cache: false });
         setInterval(function() {
          $('#status').load('/status/');
-         $('#clock').load('/clock/');
        }, 1000);
     });
     </script>
@@ -55,18 +53,19 @@
                 <td>
                     <select name="delay" id="delay" style="width: 100px">
                         <option value="0">None</option>
-                        <option value="1">1 Hour</option>
-                        <option value="2">2 Hours</option>
-                        <option value="3">3 Hours</option>
-                        <option value="4">4 Hours</option>
-                        <option value="5">5 Hours</option>
-                        <option value="6">6 Hours</option>
-                        <option value="7">7 Hours</option>
-                        <option value="8">8 Hours</option>
-                        <option value="9">9 Hours</option>
-                        <option value="10">10 Hours</option>
-                        <option value="11">11 Hours</option>
-                        <option value="12">12 Hours</option>
+                        <option value="10">10 Minutes</option>
+                        <option value="60">1 Hour</option>
+                        <option value="120">2 Hours</option>
+                        <option value="180">3 Hours</option>
+                        <option value="240">4 Hours</option>
+                        <option value="300">5 Hours</option>
+                        <option value="360">6 Hours</option>
+                        <option value="420">7 Hours</option>
+                        <option value="480">8 Hours</option>
+                        <option value="540">9 Hours</option>
+                        <option value="600">10 Hours</option>
+                        <option value="660">11 Hours</option>
+                        <option value="720">12 Hours</option>
                     </select>
                 </td>
             </tr>

@@ -144,7 +144,7 @@ def start_fan():
     start_time = datetime.now() + timedelta(minutes=delay_value)
     end_time = start_time + timedelta(seconds=time_value)
 
-    print (f'Attic Fan App: Web call to start: Time-{time_value} Delay-{delay_value} Speed-{speed}')
+    print(f'Attic Fan App: Web call to start: Time-{time_value} Delay-{delay_value} Speed-{speeds[speed]}')
     return make_response(redirect('/'))
 
 
@@ -159,7 +159,7 @@ def stop_fan():
     global end_time
 
     start_time = end_time = datetime.now() - timedelta(seconds=1)
-    print (f'Attic Fan App: Web call to stop')
+    print(f'Attic Fan App: Web call to stop')
     return make_response(redirect('/'))
 
 

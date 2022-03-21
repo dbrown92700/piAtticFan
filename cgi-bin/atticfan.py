@@ -22,6 +22,7 @@ status = 'Initializing'
 pi = pigpio.pi()
 highpin = 17
 lowpin = 22
+button = 26
 pins = [highpin, lowpin]
 speeds = ['High', 'Low']
 speed = 0
@@ -30,6 +31,9 @@ for pin in pins:
     pi.set_mode(pin, pigpio.OUTPUT)
     pi.set_pull_up_down(pin, pigpio.PUD_DOWN)
     pi.write(pin, 0)
+
+pi.set_mode(button, pigpio.INPUT)
+pi.set_pull_up_down(button, pigpio.PUD_DOWN)
 
 
 ###########################################################################
@@ -69,6 +73,36 @@ def fan_controller():
 
 fan_control = Thread(target=fan_controller)
 fan_control.start()
+
+
+###########################################################################
+# Thread function for reading the button.  Pressing the button cycles the
+# fan through Low, High, Off.  If the fan is off, it sets the timer to
+# 2 hours.
+###########################################################################
+def button():
+    global start_time
+    global end_time
+    global speed
+
+    while True:
+        button_status = pi.read(button)
+        if button_status:
+            now = datetime.now()
+            if now < end_time:
+                if speeds[speed] == 'High':
+                    start_time = end_time = now
+                else:
+                    speed = 0
+            else:
+                start_time = now
+                end_time = now + timedelta(hours=2)
+                speed = 1
+        sleep(0.1)
+
+
+button_control = Thread(target=button)
+button_control.start()
 
 app = Flask(__name__)
 app.secret_key = 'any random string'

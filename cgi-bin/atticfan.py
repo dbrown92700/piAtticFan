@@ -88,16 +88,22 @@ def button():
     while True:
         button_status = pi.read(button)
         if button_status:
+            print('pressed', end=' ')
             now = datetime.now()
             if now < end_time:
                 if speeds[speed] == 'High':
                     start_time = end_time = now
+                    print('OFF')
                 else:
                     speed = 0
+                    print('LOW')
             else:
                 start_time = now
                 end_time = now + timedelta(hours=2)
                 speed = 1
+                print('HIGH')
+            while pi.read(button):
+                sleep(0.5)
         sleep(0.1)
 
 

@@ -49,25 +49,25 @@ def fan_controller():
 
     while True:
         now = datetime.now()
-        if now < start_time:
-            starting = f'{start_time.hour}:{start_time.minute:02}:{start_time.second:02}'
-            seconds_remaining = (end_time - start_time).seconds
-            time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
-                             f'{seconds_remaining % 60:02}'
-            status = f'<b>Delayed Start</b> at {starting}<br>Will run for {time_remaining}<br>' \
-                     f'at {speeds[speed]} Speed'
-
-        elif (now > start_time) and (now < end_time):
+        if (now < start_time) or (now > end_time):
+            for pn in pins:
+                pi.write(pn, 0)
+            if now < start_time:
+                starting = f'{start_time.hour}:{start_time.minute:02}:{start_time.second:02}'
+                seconds_remaining = (end_time - start_time).seconds
+                time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
+                                 f'{seconds_remaining % 60:02}'
+                status = f'<b>Delayed Start</b> at {starting}<br>Will run for {time_remaining}<br>' \
+                         f'at {speeds[speed]} Speed'
+            else:
+                status = "<b>OFF</b>"
+        else:
             pi.write(pins[abs(speed-1)], 0)
             pi.write(pins[speed], 1)
             seconds_remaining = (end_time - now).seconds
             time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
                              f'{seconds_remaining % 60:02}'
             status = f'<b>Running</b> {speeds[speed]} Speed<br>Time Remaining: {time_remaining}'
-        else:
-            for pn in pins:
-                pi.write(pn, 0)
-            status = "<b>OFF</b>"
         sleep(1)
 
 

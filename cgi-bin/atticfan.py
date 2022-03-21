@@ -96,12 +96,12 @@ def button_function():
                     print('OFF')
                 else:
                     speed = 0
-                    print('LOW')
+                    print('HIGH')
             else:
                 start_time = now
                 end_time = now + timedelta(hours=2)
                 speed = 1
-                print('HIGH')
+                print('LOW')
             while pi.read(button):
                 sleep(0.5)
         sleep(0.1)

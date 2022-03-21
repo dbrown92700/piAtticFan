@@ -80,7 +80,7 @@ fan_control.start()
 # fan through Low, High, Off.  If the fan is off, it sets the timer to
 # 2 hours.
 ###########################################################################
-def button():
+def button_function():
     global start_time
     global end_time
     global speed
@@ -107,7 +107,7 @@ def button():
         sleep(0.1)
 
 
-button_control = Thread(target=button)
+button_control = Thread(target=button_function)
 button_control.start()
 
 app = Flask(__name__)

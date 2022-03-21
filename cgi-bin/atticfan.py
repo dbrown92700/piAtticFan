@@ -88,7 +88,7 @@ def button_function():
     while True:
         button_status = pi.read(button)
         if button_status:
-            print('pressed', end=' ')
+            print('Attic Fan App: Button pressed: Set to ', end=' ')
             now = datetime.now()
             if now < end_time:
                 if speeds[speed] == 'High':
@@ -144,6 +144,7 @@ def start_fan():
     start_time = datetime.now() + timedelta(minutes=delay_value)
     end_time = start_time + timedelta(seconds=time_value)
 
+    print (f'Attic Fan App: Web call to start: Time-{time_value} Delay-{delay_value} Speed-{speed}')
     return make_response(redirect('/'))
 
 
@@ -158,7 +159,7 @@ def stop_fan():
     global end_time
 
     start_time = end_time = datetime.now() - timedelta(seconds=1)
-
+    print (f'Attic Fan App: Web call to stop')
     return make_response(redirect('/'))
 
 

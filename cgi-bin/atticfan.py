@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+
+#
+#  Need to re-write all the fan controls into an app using this example:
+#  https://stackoverflow.com/questions/14384739/how-can-i-add-a-background-thread-to-flask
+#
+
 import os
 
 from flask import Flask, request, make_response, render_template, redirect
@@ -14,104 +20,114 @@ from datetime import datetime, timedelta
 start_time = datetime.now()
 end_time = start_time - timedelta(seconds=1)
 status = 'Initializing'
-
-###########################################################################
-# Initialize GPIO for Attic Fan.  Set High Speed and Low Speed pins to off.
-###########################################################################
-
 pi = pigpio.pi()
-highpin = 17
-lowpin = 22
-button = 26
-pins = [highpin, lowpin]
 speeds = ['High', 'Low']
 speed = 0
-
-for pin in pins:
-    pi.set_mode(pin, pigpio.OUTPUT)
-    pi.set_pull_up_down(pin, pigpio.PUD_DOWN)
-    pi.write(pin, 0)
-
-pi.set_mode(button, pigpio.INPUT)
-pi.set_pull_up_down(button, pigpio.PUD_DOWN)
+button = 26
+highpin = 17
+lowpin = 22
 
 
-###########################################################################
-# Control function for managing fan power and start and stop times.
-# Started as a thread on load.
-###########################################################################
-def fan_controller():
-    global start_time
-    global end_time
-    global pi
-    global status
-    global speed
+def app_with_background_proc():
 
-    while True:
-        now = datetime.now()
-        if (now < start_time) or (now > end_time):
-            for pn in pins:
-                pi.write(pn, 0)
-            if now < start_time:
-                starting = f'{start_time.hour}:{start_time.minute:02}:{start_time.second:02}'
-                seconds_remaining = (end_time - start_time).seconds
+    # This pulls the background processes into a single app with Flask which
+    # will be called by the WSGI
+
+    app = Flask(__name__)
+    app.secret_key = 'any random string'
+
+    ###########################################################################
+    # Initialize GPIO for Attic Fan.  Set High Speed and Low Speed pins to off.
+    ###########################################################################
+    def init_gpio():
+        global pi
+        global speed
+        pins = [highpin, lowpin]
+
+        for pin in pins:
+            pi.set_mode(pin, pigpio.OUTPUT)
+            pi.set_pull_up_down(pin, pigpio.PUD_DOWN)
+            pi.write(pin, 0)
+
+        pi.set_mode(button, pigpio.INPUT)
+        pi.set_pull_up_down(button, pigpio.PUD_DOWN)
+
+    ###########################################################################
+    # Control function for managing fan power and start and stop times.
+    # Started as a thread on load.
+    ###########################################################################
+    def fan_controller():
+        global start_time
+        global end_time
+        global pi
+        global status
+        global speed
+
+        while True:
+            now = datetime.now()
+            if (now < start_time) or (now > end_time):
+                for pn in pins:
+                    pi.write(pn, 0)
+                if now < start_time:
+                    starting = f'{start_time.hour}:{start_time.minute:02}:{start_time.second:02}'
+                    seconds_remaining = (end_time - start_time).seconds
+                    time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
+                                     f'{seconds_remaining % 60:02}'
+                    status = f'<b>Delayed Start</b> at {starting}<br>Will run for {time_remaining}<br>' \
+                             f'at {speeds[speed]} Speed'
+                else:
+                    status = "<b>OFF</b>"
+            else:
+                pi.write(pins[abs(speed-1)], 0)
+                pi.write(pins[speed], 1)
+                seconds_remaining = (end_time - now).seconds
                 time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
                                  f'{seconds_remaining % 60:02}'
-                status = f'<b>Delayed Start</b> at {starting}<br>Will run for {time_remaining}<br>' \
-                         f'at {speeds[speed]} Speed'
-            else:
-                status = "<b>OFF</b>"
-        else:
-            pi.write(pins[abs(speed-1)], 0)
-            pi.write(pins[speed], 1)
-            seconds_remaining = (end_time - now).seconds
-            time_remaining = f'{int(seconds_remaining / 3600):2}:{int((seconds_remaining % 3600) / 60):02}:' \
-                             f'{seconds_remaining % 60:02}'
-            status = f'<b>Running</b> {speeds[speed]} Speed<br>Time Remaining: {time_remaining}'
-        sleep(1)
+                status = f'<b>Running</b> {speeds[speed]} Speed<br>Time Remaining: {time_remaining}'
+            sleep(1)
 
+    ###########################################################################
+    # Thread function for reading the button.  Pressing the button cycles the
+    # fan through Low, High, Off.  If the fan is off, it sets the timer to
+    # 2 hours.
+    ###########################################################################
+    def button_function():
+        global start_time
+        global end_time
+        global speed
+        global pi
 
-fan_control = Thread(target=fan_controller)
-fan_control.start()
-
-
-###########################################################################
-# Thread function for reading the button.  Pressing the button cycles the
-# fan through Low, High, Off.  If the fan is off, it sets the timer to
-# 2 hours.
-###########################################################################
-def button_function():
-    global start_time
-    global end_time
-    global speed
-
-    while True:
-        button_status = pi.read(button)
-        if button_status:
-            print('Attic Fan App: Button pressed: Set to ', end=' ')
-            now = datetime.now()
-            if now < end_time:
-                if speeds[speed] == 'High':
-                    start_time = end_time = now
-                    print('OFF')
+        while True:
+            button_status = pi.read(button)
+            if button_status:
+                print('Attic Fan App: Button pressed: Set to ', end=' ')
+                now = datetime.now()
+                if now < end_time:
+                    if speeds[speed] == 'High':
+                        start_time = end_time = now
+                        print('OFF')
+                    else:
+                        speed = 0
+                        print('HIGH')
                 else:
-                    speed = 0
-                    print('HIGH')
-            else:
-                start_time = now
-                end_time = now + timedelta(hours=2)
-                speed = 1
-                print('LOW')
-            while pi.read(button):
-                sleep(0.5)
-        sleep(0.1)
+                    start_time = now
+                    end_time = now + timedelta(hours=2)
+                    speed = 1
+                    print('LOW')
+                while pi.read(button):
+                    sleep(0.5)
+            sleep(0.1)
+
+    init_gpio()
+    fan_control = Thread(target=fan_controller)
+    fan_control.start()
+    button_control = Thread(target=button_function)
+    button_control.start()
+
+    return app
 
 
-button_control = Thread(target=button_function)
-button_control.start()
-
-app = Flask(__name__)
-app.secret_key = 'any random string'
+app = app_with_background_proc()
 
 
 ###########################################################################

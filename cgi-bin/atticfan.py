@@ -26,6 +26,7 @@ speed = 0
 button = 26
 highpin = 17
 lowpin = 22
+pins = [highpin, lowpin]
 
 
 def app_with_background_proc():
@@ -42,7 +43,6 @@ def app_with_background_proc():
     def init_gpio():
         global pi
         global speed
-        pins = [highpin, lowpin]
 
         for pin in pins:
             pi.set_mode(pin, pigpio.OUTPUT)

@@ -103,9 +103,9 @@ def event_function():
             if web_action['action'] == 'Stop':
                 start_time = stop_time = now
             else:
-                speed = web_action['speed']
-                start_time = datetime.fromtimestamp(now.timestamp() + web_action['delay'])
-                stop_time = datetime.fromtimestamp(start_time.timestamp() + web_action['time'])
+                speed = int(web_action['speed'])
+                start_time = datetime.fromtimestamp(now.timestamp() + int(web_action['delay']))
+                stop_time = datetime.fromtimestamp(start_time.timestamp() + int(web_action['time']))
 
         #####
         # If the settings have changed, post the update to the webserver

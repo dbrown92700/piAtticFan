@@ -60,6 +60,7 @@ def fan_control():
         return jsonify(to_control)
     if request.method == 'POST':
         status = request.values
+        print(f'Fan Control POST: {fan_status}')
         return ''
 
 
@@ -70,6 +71,8 @@ def fan_control():
 def fan_status():
 
     global status
+
+    print(f'Fan Status GET: {fan_status}')
 
     now = datetime.now().timestamp()
     start = datetime.fromtimestamp(status['start'])

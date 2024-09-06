@@ -60,6 +60,7 @@ def fan_control():
         return jsonify(to_control)
     if request.method == 'POST':
         status = request.values
+        return ''
 
 
 ###########################################################################

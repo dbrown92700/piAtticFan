@@ -100,7 +100,7 @@ def event_function():
         web_action = requests.get(f'http://{fan_host}/control').json()
         if web_action['action']:
             post = True
-            if web_action['action'] == 'Stop':
+            if web_action['action'] == 'stop':
                 start_time = stop_time = now
             else:
                 speed = int(web_action['speed'])

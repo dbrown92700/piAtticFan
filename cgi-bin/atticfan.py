@@ -59,7 +59,7 @@ def fan_control():
         action = {'action': None}
         return jsonify(to_control)
     if request.method == 'POST':
-        status = dict(request.values)
+        status = dict(request.form)
         print(f'Fan Control POST: {status}')
         return ''
 

@@ -92,5 +92,5 @@ if __name__ == '__main__':
     # can be configured by adding an `entrypoint` to app.yaml.
     # Set PI_IP_ADD environment variable with the server IP address
     ipaddress = os.getenv('PI_IP_ADD', '127.0.0.1')
-    app.run(host=ipaddress, port=80, debug=True)
+    app.run(host=ipaddress, port=8080, debug=True)
 # [END gae_python38_app]

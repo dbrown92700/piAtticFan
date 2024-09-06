@@ -96,7 +96,7 @@ def event_function():
         #####
         # Check for a user action from the webserver
         #####
-        web_action = requests.get('http://localhost/control').json()
+        web_action = requests.get('http://localhost:8080/control').json()
         if web_action['action']:
             post = True
             if web_action['action'] == 'Stop':
@@ -116,7 +116,7 @@ def event_function():
                 'stop': datetime.timestamp(stop_time)
             }
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-            requests.post('http://localhost/control', headers=headers, data=json.dumps(payload))
+            requests.post('http://localhost:8080/control', headers=headers, data=json.dumps(payload))
 
         sleep(0.1)
 

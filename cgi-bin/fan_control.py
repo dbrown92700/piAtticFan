@@ -116,6 +116,7 @@ def event_function():
                 'start': datetime.timestamp(start_time),
                 'stop': datetime.timestamp(stop_time)
             }
+            print(payload)
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
             requests.post(f'http://{fan_host}/control', headers=headers, data=payload)
 

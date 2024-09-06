@@ -15,6 +15,7 @@ import requests
 start_time = stop_time = datetime.now()
 speed = 0
 speeds = ['High', 'Low']
+fan_host = '192.168.1.66:8080'
 
 pi = pigpio.pi()
 button = 26
@@ -96,7 +97,7 @@ def event_function():
         #####
         # Check for a user action from the webserver
         #####
-        web_action = requests.get('http://localhost:8080/control').json()
+        web_action = requests.get(f'http://{fan_host}/control').json()
         if web_action['action']:
             post = True
             if web_action['action'] == 'Stop':
@@ -116,7 +117,7 @@ def event_function():
                 'stop': datetime.timestamp(stop_time)
             }
             headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-            requests.post('http://localhost:8080/control', headers=headers, data=json.dumps(payload))
+            requests.post(f'http://{fan_host}/control', headers=headers, data=json.dumps(payload))
 
         sleep(0.1)
 

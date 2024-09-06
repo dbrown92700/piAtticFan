@@ -81,7 +81,7 @@ def fan_status():
     elif now < status['stop']:
         state = f'<b>Running</b> {speed} Speed<br>Until {stop.hour:02}:{stop.minute:02}'
     else:
-        state = '<b>Off</b>ß'
+        state = '<b>Off</b>'
 
     return state
 

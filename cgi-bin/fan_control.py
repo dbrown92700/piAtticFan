@@ -117,8 +117,8 @@ def event_function():
                 'stop': datetime.timestamp(stop_time)
             }
             print(payload)
-            # headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-            requests.post(f'http://{fan_host}/control', data=payload)
+            headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+            requests.post(f'http://{fan_host}/control', data=json.dumps(payload), headers=headers)
 
         sleep(0.1)
 

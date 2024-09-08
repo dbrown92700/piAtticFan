@@ -7,7 +7,7 @@
 
 import os
 
-from flask import Flask, request, make_response, render_template, redirect, jsonify
+from flask import Flask, request, make_response, render_template, redirect, jsonify, Markup
 from datetime import datetime
 
 ###########################################################################
@@ -29,7 +29,7 @@ app.secret_key = 'attic app'
 @app.route('/')
 def main_page():
 
-    return make_response(render_template('fan.html', status=fan_status()))
+    return make_response(render_template('fan.html', status=Markup(fan_status())))
 
 
 ###########################################################################
@@ -79,7 +79,7 @@ def fan_status():
     stop = datetime.fromtimestamp(status['stop'])
     speed = speeds[status['speed']]
     if now < status['start']:
-        status = f'<b>Scheduled</b><br>From {start.hour:02}:{start.minute:02}<br>' \
+        state = f'<b>Scheduled</b><br>From {start.hour:02}:{start.minute:02}<br>' \
                  f'to {stop.hour:02}:{stop.minute:02}<br>' \
                  f'at {speed} Speed'
     elif now < status['stop']:

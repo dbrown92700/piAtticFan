@@ -14,7 +14,7 @@ from datetime import datetime
 # Set up global variables for start and stop times.  These are manipulated
 # by the web calls and used by the fan control thread.
 ###########################################################################
-speeds = ['Off', 'High', 'Low']
+speeds = ['High', 'Low']
 status = {'speed': 0, 'start': 0, 'stop': 0}
 action = {'action': None}
 
@@ -79,11 +79,11 @@ def fan_status():
     stop = datetime.fromtimestamp(status['stop'])
     speed = speeds[status['speed']]
     if now < status['start']:
-        status = f'<b>Delayed Start</b> From {start.hour:02}:{start.minute:02}<br>' \
+        status = f'<b>Scheduled</b><br>From {start.hour:02}:{start.minute:02}<br>' \
                  f'to {stop.hour:02}:{stop.minute:02}<br>' \
                  f'at {speed} Speed'
     elif now < status['stop']:
-        state = f'<b>Running</b> {speed} Speed<br>Until {stop.hour:02}:{stop.minute:02}'
+        state = f'<b>Running</b><br>{speed} Speed<br>Until {stop.hour:02}:{stop.minute:02}'
     else:
         state = '<b>Off</b>'
 

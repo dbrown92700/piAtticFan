@@ -15,7 +15,7 @@ import requests
 start_time = stop_time = datetime.now()
 speed = 0
 speeds = ['High', 'Low']
-fan_host = '192.168.1.66:8080'
+fan_host = '192.168.1.66'
 
 pi = pigpio.pi()
 button = 26

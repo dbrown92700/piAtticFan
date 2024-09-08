@@ -126,7 +126,7 @@ def event_function():
 if __name__ == "__main__":
 
     init_gpio()
-    # fan_control = Thread(target=fan_controller)
-    # fan_control.start()
+    fan_control = Thread(target=fan_controller)
+    fan_control.start()
     event_control = Thread(target=event_function)
     event_control.start()

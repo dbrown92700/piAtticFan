@@ -104,7 +104,7 @@ def event_function():
                 start_time = stop_time = now
             else:
                 speed = int(web_action['speed'])
-                start_time = datetime.fromtimestamp(now.timestamp() + int(web_action['delay']))
+                start_time = datetime.fromtimestamp(now.timestamp() + int(web_action['delay']))*60
                 stop_time = datetime.fromtimestamp(start_time.timestamp() + int(web_action['time']))
 
         #####

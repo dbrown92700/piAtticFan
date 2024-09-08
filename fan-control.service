@@ -5,8 +5,8 @@ After=multi-user.target apache2.service
 User=root
 Type=simple
 Environment=PYTHONUNBUFFERED=1
-WorkingDirectory=/home/db/Documents/piAtticFan/
-ExecStart=/usr/bin/python3 /home/db/Documents/piAtticFan/fan_control.py
+WorkingDirectory=/home/pi/Documents/piAtticFan/
+ExecStart=/usr/bin/python3 /home/pi/Documents/piAtticFan/fan_control.py
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure

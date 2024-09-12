@@ -109,8 +109,9 @@ def event_function():
 
         #####
         # If the settings have changed, post the update to the webserver
+        # Re-post data every 10 minutes to fix issue with atticfan variables getting cleared over time
         #####
-        if post:
+        if post or (now.minute % 10 == 0):
             payload = {
                 'speed': speed,
                 'start': datetime.timestamp(start_time),

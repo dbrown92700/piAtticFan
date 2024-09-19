@@ -141,7 +141,8 @@ if __name__ == "__main__":
         filename=f"fan_control_{t.year}.{t.month:02}.log",
         filemode="a",
         format="{asctime} {levelname}:{message}",
-        datefmt="%Y-%m-%d %H:%M"
+        datefmt="%Y-%m-%d %H:%M",
+        level=logging.INFO
     )
     logger = logging.getLogger(__name__)
     logger.info('created logger')

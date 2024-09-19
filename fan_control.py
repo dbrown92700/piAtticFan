@@ -140,12 +140,11 @@ if __name__ == "__main__":
     logging.basicConfig(
         filename=f"fan_control_{t.year}.{t.month:02}.log",
         filemode="a",
-        format="'%(asctime)s %(levelname)-10s:%(message)s",
+        format="%(asctime)s %(levelname)-10s:%(message)s",
         datefmt="%Y-%m-%d %H:%M",
         level=logging.INFO
     )
     logger = logging.getLogger(__name__)
-    logger.info('created logger')
     init_gpio()
     fan_control = Thread(target=fan_controller)
     fan_control.start()

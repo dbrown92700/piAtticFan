@@ -139,10 +139,9 @@ if __name__ == "__main__":
     t = datetime.now()
     logging.basicConfig(
         filename=f"fan_control_{t.year}.{t.month:02}.log",
-        encoding="utf-8",
         filemode="a",
         format="{asctime} {levelname}:{message}",
-        datefmt="%Y-%m-%d %H:%M",
+        datefmt="%Y-%m-%d %H:%M"
     )
     init_gpio()
     fan_control = Thread(target=fan_controller)

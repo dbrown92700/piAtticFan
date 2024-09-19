@@ -144,6 +144,7 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%d %H:%M"
     )
     logger = logging.getLogger(__name__)
+    logger.info('created logger')
     init_gpio()
     fan_control = Thread(target=fan_controller)
     fan_control.start()

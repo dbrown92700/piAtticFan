@@ -9,6 +9,17 @@ import os
 
 from flask import Flask, request, make_response, render_template, redirect, jsonify, Markup
 from datetime import datetime
+import logging
+
+now = datetime.now()
+logging.basicConfig(
+    filename=f"atticfan_web_{now.year}.{now.month:02}.log",
+    encoding="utf-8",
+    filemode="a",
+    format="{asctime} {levelname}:{message}",
+    datefmt="%Y-%m-%d %H:%M",
+)
+logging.info('************ Web server started')
 
 ###########################################################################
 # Set up global variables for start and stop times.  These are manipulated
@@ -60,7 +71,7 @@ def fan_control():
         return jsonify(to_control)
     if request.method == 'POST':
         status = dict(request.get_json())
-        print(f'Fan Control POST: {status}')
+        logging.info(f'Fan Control POST: {status}')
         return ''
 
 
@@ -72,8 +83,7 @@ def fan_status():
 
     global status
 
-    print(f'Fan Status GET: {status}')
-
+    logging.info(f'Fan Status GET: {status}')
     now = datetime.now().timestamp()
     start = datetime.fromtimestamp(status['start'])
     stop = datetime.fromtimestamp(status['stop'])

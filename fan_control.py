@@ -38,7 +38,7 @@ def init_gpio():
 
     pi.set_mode(button, pigpio.INPUT)
     pi.set_pull_up_down(button, pigpio.PUD_DOWN)
-    logging.info('************** Starting fan_control. Init GPIO')
+    logger.info('************** Starting fan_control. Init GPIO')
 
 
 ###########################################################################
@@ -95,7 +95,7 @@ def event_function():
             while pi.read(button):
                 sleep(0.5)
             post = True
-            logging.info(f'Button Push: Speed {speed} Start: {start_time} Stop: {stop_time}')
+            logger.info(f'Button Push: Speed {speed} Start: {start_time} Stop: {stop_time}')
 
         #####
         # Check for a user action from the webserver
@@ -103,18 +103,18 @@ def event_function():
         try:
             web_action = requests.get(f'http://{fan_host}/control').json()
         except requests.exceptions.ConnectionError:
-            logging.error('Web GET Connection Error')
+            logger.error('Web GET Connection Error')
             web_action = {'action': None}
         if web_action['action']:
             post = True
             if web_action['action'] == 'stop':
                 start_time = stop_time = now
-                logging.info(f'Web Stop')
+                logger.info(f'Web Stop')
             else:
                 speed = int(web_action['speed'])
                 start_time = datetime.fromtimestamp(now.timestamp() + int(web_action['delay'])*60)
                 stop_time = datetime.fromtimestamp(start_time.timestamp() + int(web_action['time']))
-                logging.info(f'Web Push: Speed {speed} Start: {start_time} Stop: {stop_time}')
+                logger.info(f'Web Push: Speed {speed} Start: {start_time} Stop: {stop_time}')
 
         #####
         # If the settings have changed, post the update to the webserver
@@ -130,7 +130,7 @@ def event_function():
             try:
                 requests.post(f'http://{fan_host}/control', data=json.dumps(payload), headers=headers)
             except requests.exceptions.ConnectionError:
-                logging.error('POST Connection Error')
+                logger.error('POST Connection Error')
 
         sleep(1)
 
@@ -143,6 +143,7 @@ if __name__ == "__main__":
         format="{asctime} {levelname}:{message}",
         datefmt="%Y-%m-%d %H:%M"
     )
+    logger = logging.getLogger(__name__)
     init_gpio()
     fan_control = Thread(target=fan_controller)
     fan_control.start()

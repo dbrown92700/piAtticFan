@@ -17,7 +17,7 @@ logging.basicConfig(
     encoding="utf-8",
     filemode="a",
     format="{asctime} {levelname}:{message}",
-    datefmt="%Y-%m-%d %H:%M",
+    datefmt="%Y-%m-%d %H:%M"
 )
 logging.info('************ Web server started')
 
